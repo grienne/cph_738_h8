@@ -27,16 +27,19 @@ Construct 95% confidence intervals for model parameters. Do they capture the tru
 values of β0 and β1 that you calculate in Assignment #7 (1)?
 
       Homework 7 Question: 1
-          Bo = -.99
-          B1 = .497
-
+          Bo = -.99 
+          B1 =  .497
+      Yes, they are captured.
+            
 ```{r Question 1}
 
 q1_glm <- glm(grad.flg ~ income, family = binomial(link = 'logit'))
 
 summary(q1_glm)
 confint(q1_glm)
-
+exp(confint(q1_glm))
+exp(-.99) 
+exp(.497)
 
 ```
 
@@ -49,8 +52,9 @@ glm(grad.flg ~ income, data = dat, family = binomial(link = 'probit'))
 
 q2_glm <- glm(grad.flg ~ income, data = dat, family = binomial(link = 'probit'))
 summary(q2_glm)
-q2_glm_scale <- coef(q2_glm)
-q2_glm_scale * 1.6
+
+q1_glm_scale <- coef(q1_glm)
+q1_glm_scale / 1.6
 
 ```
 
@@ -86,18 +90,22 @@ p + geom_line(aes(x = x, y = f), colour = 'red') +
 
 ######
 
-cut.ng <- - q1_glm$coefficients[1] / q1_glm$coefficients[2]
-sigma.ng <- 1 / q1_glm$coefficients[2]
+##predicted values
+dat$final.probs <- predict(q1_glm, type = 'response')
 
-cut.g <- - (q1_glm$coefficients[1] + q1_glm$coefficients[3]) / (q1_glm$coefficients[2] + q1_glm$coefficients[4])
-sigma.g <- 1 / (q1_glm$coefficients[2] + q1_glm$coefficients[4])
+cut.g <- - q1_glm$coefficients[1] / q1_glm$coefficients[2]
+sigma.g <- 1 / q1_glm$coefficients[2]
+
+#cut.g <- - (q1_glm$coefficients[1] + q1_glm$coefficients[3]) / (q1_glm$coefficients[2] + q1_glm$coefficients[4])
+#sigma.g <- 1 / (q1_glm$coefficients[2] + q1_glm$coefficients[4])
 
     
 p  = ggplot(dat)
-p + geom_line(aes(x = income, y = I(expected(income, cut.ng, sigma.ng))), colour = 'red')+
-    geom_line(aes(x = income, y = I(expected(income, cut.g, sigma.g))), colour = 'blue')+
-    geom_point(aes(x = income, y = C.t, colour = Sex), size = 5, alpha = 0.1) +
-    geom_segment(aes(x = cut.ng, y = 0, xend = cut.ng, yend = 1), colour = 'red') +
+p + #geom_line(aes(x = income, y = I(expected(income, cut.ng, sigma.ng))), colour = 'red')+
+    geom_line(aes(x = income, y = final.probs, colour = 'blue'))+
+    geom_point(aes(x = income, y = grad.flg), size = 5, alpha = 0.1) +
+    annotate("text", label="cut.point = 12,900", x=2, y=.5, size=3) +
+    #geom_segment(aes(x = cut.ng, y = 0, xend = cut.ng, yend = 1), colour = 'red') +
     geom_segment(aes(x = cut.g, y = 0, xend = cut.g, yend = 1), colour = 'blue') +
     scale_y_continuous("Pr(Graduation)", limits = c(0,1)) +
     scale_x_continuous("Income") +
