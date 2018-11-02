@@ -17,8 +17,6 @@ require(ggmosaic)                       #<-- for mosaic plots
 require(epitools) 
 
 dat <- read.table(file = "grad_dat.txt", header = T)
-head(dat)
-
 attach(dat)
 
 ```
@@ -28,6 +26,10 @@ attach(dat)
 Construct 95% confidence intervals for model parameters. Do they capture the true
 values of β0 and β1 that you calculate in Assignment #7 (1)?
 
+      Homework 7 Question: 1
+          Bo = -.99
+          B1 = .497
+
 ```{r Question 1}
 
 q1_glm <- glm(grad.flg ~ income, family = binomial(link = 'logit'))
@@ -35,7 +37,6 @@ q1_glm <- glm(grad.flg ~ income, family = binomial(link = 'logit'))
 summary(q1_glm)
 confint(q1_glm)
 
-###Put answers from Q7 here; yes they do capture it
 
 ```
 
