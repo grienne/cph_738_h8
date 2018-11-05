@@ -2,7 +2,9 @@
 title: "h8"
 author: "grienne"
 date: "November 1, 2018"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -31,7 +33,7 @@ values of β0 and β1 that you calculate in Assignment #7 (1)?
           B1 =  .497
       Yes, they are captured.
             
-```{r Question 1}
+```{r Question 1, echo=FALSE}
 
 q1_glm <- glm(grad.flg ~ income, family = binomial(link = 'logit'))
 
@@ -48,7 +50,7 @@ exp(.497)
 glm(grad.flg ~ income, data = dat, family = binomial(link = 'probit'))
 
 
-```{r Question 2}
+```{r Question 2, echo=FALSE}
 
 q2_glm <- glm(grad.flg ~ income, data = dat, family = binomial(link = 'probit'))
 summary(q2_glm)
@@ -63,41 +65,18 @@ student is more likely to graduate than not. Plot the fitted values from your lo
 regression with a vertical line showing the estimated cut point in income.
 
 
-```{r Question 3}
+```{r Question 3, echo=FALSE}
 mean_ng <- coefficients(q1_glm) %*% c(1, 0)
 mean_g <- coefficients(q1_glm) %*% c(1, 1)
 
 zi <- seq(-4, 6, 0.01)
 tmp.dat <- data.frame(x = zi, f = dlogis(zi, mean_ng, 1), m = dlogis(zi, mean_g, 1))
 
-p = ggplot(tmp.dat)
-p + geom_line(aes(x = x, y = f), colour = 'red') +
-    geom_line(aes(x = x, y = m), color = 'blue') +
-    geom_vline(xintercept = c(0)) +
-    geom_hline(yintercept = c(0), linetype = 'dashed') +
-    geom_ribbon(data = subset(tmp.dat, x < 0), aes(x = x, ymax = m),
-                ymin = 0, fill = "blue", alpha = 0.3) +
-    geom_ribbon(data = subset(tmp.dat, x < 0), aes(x = x, ymax = f),
-                ymin = 0, fill = "red", alpha = 0.5) +
-    scale_x_continuous("Latent variable Z") +
-    scale_y_continuous("Probability Density Function of Z") +
-    theme_bw() +
-    theme(axis.text=element_text(size=rel(1.9)),
-          axis.text.x=element_text(vjust=0),
-          axis.title.x=element_text(colour="grey10",vjust=0,size=rel(2)),
-          axis.title.y=element_text(colour="red",size=rel(2),vjust=0.3),
-          plot.title = element_text(colour="grey10",size=rel(2)))
-
-######
-
 ##predicted values
 dat$final.probs <- predict(q1_glm, type = 'response')
 
 cut.g <- - q1_glm$coefficients[1] / q1_glm$coefficients[2]
 sigma.g <- 1 / q1_glm$coefficients[2]
-
-#cut.g <- - (q1_glm$coefficients[1] + q1_glm$coefficients[3]) / (q1_glm$coefficients[2] + q1_glm$coefficients[4])
-#sigma.g <- 1 / (q1_glm$coefficients[2] + q1_glm$coefficients[4])
 
     
 p  = ggplot(dat)
@@ -118,7 +97,7 @@ p + #geom_line(aes(x = income, y = I(expected(income, cut.ng, sigma.ng))), colou
           plot.title = element_text(colour="grey10",size=rel(2)))
 
 
-
+(log(.99/(1-.88)) + .99) / 6
 
 
 ```
